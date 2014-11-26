@@ -16,9 +16,6 @@
 
 ## TODO:
 
- - finish base class for fetch strategies
- - implement fetch strategy for files
- - implement fetch strategies for urls
  - implement meta tag extraction parser
  - map og:metatags to a datastructure that makes sense
  - a method to get uri list from json
