@@ -1,6 +1,7 @@
 <?php
 namespace OpenGraphParser;
-class FetchStrategy {
-    public function get($uri) {
+class FetchStrategy extends AbstractFetchStrategy {
+    protected function get_uri($uri) {
+        return '';
     }
 }
