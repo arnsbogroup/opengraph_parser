@@ -59,5 +59,15 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('content', $result->getOriginalContent());
     }
 
+    public function testStaticHttpMethodSetsFetchStrategyToHttp() {
+        $subject = OpenGraphParser::Http();
+        $this->assertInstanceOf('OpenGraphParser\HttpFetchStrategy', $subject->getFetchStrategy());
+    }
+
+    public function testStaticFileMethodSetsFetchStrategyToFile() {
+        $subject = OpenGraphParser::File();
+        $this->assertInstanceOf('OpenGraphParser\FileFetchStrategy', $subject->getFetchStrategy());
+    }
+
 }
 

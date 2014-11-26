@@ -3,6 +3,18 @@ namespace OpenGraphParser;
 class OpenGraphParser {
     protected $fetchStrategy;
 
+    public static function Http() {
+        $obj = new OpenGraphParser();
+        $obj->setFetchStrategy(new HttpFetchStrategy());
+        return $obj;
+    }
+
+    public static function File() {
+        $obj = new OpenGraphParser();
+        $obj->setFetchStrategy(new FileFetchStrategy());
+        return $obj;
+    }
+
     public function __construct($fetchStrategy=null) {
         if(is_null($fetchStrategy)) {
             $this->fetchStrategy = new FetchStrategy();
@@ -23,6 +35,10 @@ class OpenGraphParser {
 
     public function setFetchStrategy(\OpenGraphParser\AbstractFetchStrategy $strategy) {
         $this->fetchStrategy = $strategy;
+    }
+
+    public function getFetchStrategy() {
+        return $this->fetchStrategy;
     }
 
 }
