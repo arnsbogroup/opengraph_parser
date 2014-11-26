@@ -13,5 +13,14 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $result = $subject->parse();
         $this->assertInstanceOf('OpenGraphParser\Result', $result);
     }
+
+    public function testParseListReturnsAResultPerElement() {
+        $subject = new OpenGraphParser();
+        $result = $subject->parseList(array('', '', ''));
+
+        $this->assertInstanceOf('OpenGraphParser\Result', $result[0]);
+        $this->assertInstanceOf('OpenGraphParser\Result', $result[1]);
+        $this->assertInstanceOf('OpenGraphParser\Result', $result[2]);
+    }
 }
 
