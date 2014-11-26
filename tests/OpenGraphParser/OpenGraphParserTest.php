@@ -74,7 +74,16 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $fixturePath = realpath(__DIR__.'/../fixtures/simple.html');
         $result = $subject->parse($fixturePath);
         $this->assertEquals(file_get_contents($fixturePath), $result->getOriginalContent());
-        
+    }
+
+    public function testFileParserGetsOpenGraphFieldsFromFixture() {
+        $subject = OpenGraphParser::File();
+        $fixturePath = realpath(__DIR__.'/../fixtures/simple.html');
+        $result = $subject->parse($fixturePath);
+        $this->assertArrayHasKey('url', $result->getOpenGraphFields());
+        $this->assertArrayHasKey('title', $result->getOpenGraphFields());
+        $this->assertArrayHasKey('description', $result->getOpenGraphFields());
+        $this->assertArrayHasKey('type', $result->getOpenGraphFields());
     }
 
 }
