@@ -1,4 +1,4 @@
-![Build status](https://travis-ci.org/ArnsboMedia/opengraph_parser.svg)
+[![Build status](https://travis-ci.org/ArnsboMedia/opengraph_parser.svg)](https://travis-ci.org/ArnsboMedia/opengraph_parser)
 
 # Parser for OpenGraph Data
 
