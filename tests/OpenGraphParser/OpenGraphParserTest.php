@@ -39,7 +39,24 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
 
 
         $this->subject->parse('something');
+    }
 
+    public function testResultObjectHasOriginalFetchedBody() {
+        $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $strategy->expects($this->once())
+                 ->method('get')
+                 ->with($this->equalTo('something'))
+                 ->willReturn('content');
+
+        $this->subject->setFetchStrategy($strategy);
+
+
+        $result = $this->subject->parse('something');
+
+        $this->assertEquals('content', $result->getOriginalContent());
     }
 
 }
