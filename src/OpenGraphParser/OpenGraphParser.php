@@ -22,7 +22,7 @@ class OpenGraphParser {
         return $out;
     }
 
-    public function setFetchStrategy($strategy) {
+    public function setFetchStrategy(\OpenGraphParser\FetchStrategy $strategy) {
         $this->fetchStrategy = $strategy;
     }
 
