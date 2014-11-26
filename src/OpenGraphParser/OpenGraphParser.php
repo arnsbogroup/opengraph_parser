@@ -1,7 +1,16 @@
 <?php
 namespace OpenGraphParser;
 class OpenGraphParser {
-    public function parse() {
+    protected $fetchStrategy;
+
+    public function __construct($fetchStrategy=null) {
+        if(is_null($fetchStrategy)) {
+            $this->fetchStrategy = new FetchStrategy();
+        }
+    }
+
+    public function parse($uri) {
+        $content = $this->fetchStrategy->get($uri);
         return new Result();
     }
 
@@ -12,4 +21,9 @@ class OpenGraphParser {
         }
         return $out;
     }
+
+    public function setFetchStrategy($strategy) {
+        $this->fetchStrategy = $strategy;
+    }
+
 }
