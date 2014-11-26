@@ -8,5 +8,10 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testParseUrlReturnsResultObject() {
+        $subject = new OpenGraphParser();
+        $result = $subject->parse();
+        $this->assertInstanceOf('OpenGraphParser\Result', $result);
+    }
 }
 
