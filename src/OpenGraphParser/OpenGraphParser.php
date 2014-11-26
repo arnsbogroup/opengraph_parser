@@ -10,8 +10,7 @@ class OpenGraphParser {
     }
 
     public function parse($uri) {
-        $content = $this->fetchStrategy->get($uri);
-        return new Result($content);
+        return $this->fetchStrategy->get($uri);
     }
 
     public function parseList($urls) {
