@@ -11,5 +11,7 @@
             "email": "claus@wittnezz.dk"
         }
     ],
-    "require": {}
+    "require": {
+      "guzzlehttp/guzzle": "~5.0"
+    }
 }
