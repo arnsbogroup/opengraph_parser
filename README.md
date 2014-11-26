@@ -1,3 +1,5 @@
+![Build status](https://travis-ci.org/ArnsboMedia/opengraph_parser.svg)
+
 # Parser for OpenGraph Data
 
 ## Goals
