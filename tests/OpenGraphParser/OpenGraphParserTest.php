@@ -184,5 +184,25 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $ogFields = $result->getOpenGraphFields();
         $this->assertEquals('new title here', $ogFields['title']);
     }
+
+    public function testParserOnlyFetchesContentOnceIfUriIsCached() {
+        $cacheAdapter = new ArrayCacheAdapter();
+
+        $fileFetchStrategy = $this->getMockBuilder('OpenGraphParser\FileFetchStrategy')
+            ->setMethods(array('get_content'))
+            ->getMock();
+
+        $subject = new OpenGraphParser(array('cacheAdapter' => $cacheAdapter, 'fetchStrategy' => $fileFetchStrategy));
+
+        $fileFetchStrategy->expects($this->once())
+            ->method('get_content')
+            ->with($this->equalTo('some/url/here'))
+            ->willReturn('some content');
+
+        $this->assertEquals($cacheAdapter, $subject->getCacheAdapter());
+        $this->assertEquals($cacheAdapter, $subject->getFetchStrategy()->getCacheAdapter());
+
+        $results = $subject->parseList(array('some/url/here','some/url/here','some/url/here'));
+    }
 }
 

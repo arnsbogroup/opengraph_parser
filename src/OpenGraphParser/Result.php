@@ -31,6 +31,10 @@ class Result {
         $this->content = $data['content'];
         $this->og_fields = $data['openGraphFields'];
         $this->cacheAdapter = $data['cacheAdapter'];
+
+        // it may be bad form to do this in a constructor, none-the-less, this is what I want
+        //
+        if($this->content != '') $this->getOpenGraphFields();
     }
 
     public function getOpenGraphFields() {
