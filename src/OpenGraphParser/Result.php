@@ -3,6 +3,8 @@ namespace OpenGraphParser;
 class Result {
     protected $content;
     protected $og_fields;
+    protected $uri;
+    protected $cacheAdapter;
 
     protected function build_og_fields() {
         $this->og_fields = array();
@@ -17,10 +19,18 @@ class Result {
             $content = $meta->getAttribute('content');
             $this->og_fields[str_replace('og:', '', $property)] = $content;
         }
+
+        if(!is_null($this->cacheAdapter)) {
+            $cachedData = array('content' => $this->content, 'openGraphFields' => $this->og_fields);
+            $this->cacheAdapter->set($this->uri, $cachedData);
+        }
     }
 
-    public function __construct($content) {
-        $this->content = $content;
+    public function __construct($data) {
+        $this->uri = $data['uri'];
+        $this->content = $data['content'];
+        $this->og_fields = $data['openGraphFields'];
+        $this->cacheAdapter = $data['cacheAdapter'];
     }
 
     public function getOpenGraphFields() {
@@ -32,5 +42,13 @@ class Result {
 
     public function getOriginalContent() {
         return $this->content;
+    }
+
+    public function getCacheAdapter() {
+        return $this->cacheAdapter;
+    }
+
+    public function getUri() {
+        return $this->uri;
     }
 }

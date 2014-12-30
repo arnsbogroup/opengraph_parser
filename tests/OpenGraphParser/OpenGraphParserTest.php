@@ -28,7 +28,6 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
     public function testParseUsesFetchStrategy() {
 
         $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
-            ->disableOriginalConstructor()
             ->getMock();
 
         $strategy->expects($this->once())
@@ -44,7 +43,6 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
     public function testResultObjectHasOriginalFetchedBody() {
         $strategy = $this->getMockBuilder('OpenGraphParser\AbstractFetchStrategy')
             ->setMethods(array('get_content'))
-            ->disableOriginalConstructor()
             ->getMock();
 
         $strategy->expects($this->once())
@@ -86,5 +84,105 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('type', $result->getOpenGraphFields());
     }
 
+    public function testParserHasCorrectFetchStrategyWhenSetByOptions() {
+        $fileFetchStrategy = new FileFetchStrategy();
+        $subject = new OpenGraphParser(array('fetchStrategy' => $fileFetchStrategy));
+        $this->assertEquals($fileFetchStrategy, $subject->getFetchStrategy());
+    }
+
+    public function testParserHasCorrectCacheAdapterWhenSetByOptions() {
+        $cacheAdapter = new NoCacheAdapter();
+        $subject = new OpenGraphParser(array('cacheAdapter' => $cacheAdapter));
+        $this->assertEquals($cacheAdapter, $subject->getCacheAdapter());
+    }
+
+    public function testParserChecksCacheForUriBeforeParsing() {
+        $cacheAdapter = $this->getMockBuilder('OpenGraphParser\NoCacheAdapter')
+            ->setMethods(array('has', 'get', 'set'))
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $fileFetchStrategy = $this->getMockBuilder('OpenGraphParser\FileFetchStrategy')
+            ->setMethods(array('get_content'))
+            ->getMock();
+
+        $subject = new OpenGraphParser(array('cacheAdapter' => $cacheAdapter, 'fetchStrategy' => $fileFetchStrategy));
+
+        $fileFetchStrategy->expects($this->once())
+            ->method('get_content')
+            ->with($this->equalTo('some/url/here'))
+            ->willReturn('some content');
+
+        $cacheAdapter->expects($this->once())
+            ->method('has')
+            ->with($this->equalTo('some/url/here'))
+            ->willReturn(false);
+
+        $this->assertEquals($cacheAdapter, $subject->getCacheAdapter());
+        $this->assertEquals($cacheAdapter, $subject->getFetchStrategy()->getCacheAdapter());
+
+        $subject->parse('some/url/here');
+        
+    }
+
+    public function testParserSetsResultOfParsingInCache() {
+        $fixturePath = realpath(__DIR__.'/../fixtures/simple.html');
+
+        $cacheAdapter = $this->getMockBuilder('OpenGraphParser\NoCacheAdapter')
+            ->setMethods(array('has', 'get', 'set'))
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $cacheAdapter->expects($this->once())
+            ->method('has')
+            ->with($this->equalTo($fixturePath))
+            ->willReturn(false);
+
+        $cacheAdapter->expects($this->once())
+            ->method('set')
+            ->with($this->equalTo($fixturePath), $this->logicalAnd($this->arrayHasKey('content'), $this->arrayHasKey('openGraphFields')));
+
+
+        $subject = OpenGraphParser::File(array('cacheAdapter' => $cacheAdapter));
+
+        $this->assertEquals($cacheAdapter, $subject->getCacheAdapter());
+        $this->assertEquals($cacheAdapter, $subject->getFetchStrategy()->getCacheAdapter());
+
+        $result = $subject->parse($fixturePath);
+        $this->assertEquals($cacheAdapter, $result->getCacheAdapter());
+
+        $result->getOpenGraphFields();
+    }
+
+    public function testParserReturnsResultFromCacheIfPresent() {
+        $fixturePath = realpath(__DIR__.'/../fixtures/simple.html');
+
+        $cacheAdapter = $this->getMockBuilder('OpenGraphParser\NoCacheAdapter')
+            ->setMethods(array('has', 'get', 'set'))
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $cacheAdapter->expects($this->once())
+            ->method('has')
+            ->with($this->equalTo($fixturePath))
+            ->willReturn(true);
+
+        $cacheAdapter->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($fixturePath))
+            ->willReturn(array('content' => 'basic content here', 'openGraphFields' => array('title' => 'new title here')));
+
+
+        $subject = OpenGraphParser::File(array('cacheAdapter' => $cacheAdapter));
+
+        $this->assertEquals($cacheAdapter, $subject->getCacheAdapter());
+        $this->assertEquals($cacheAdapter, $subject->getFetchStrategy()->getCacheAdapter());
+
+        $result = $subject->parse($fixturePath);
+        $this->assertEquals($cacheAdapter, $result->getCacheAdapter());
+
+        $ogFields = $result->getOpenGraphFields();
+        $this->assertEquals('new title here', $ogFields['title']);
+    }
 }
 
