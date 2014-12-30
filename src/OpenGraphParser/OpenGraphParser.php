@@ -4,21 +4,31 @@ class OpenGraphParser {
     protected $fetchStrategy;
 
     public static function Http() {
-        $obj = new OpenGraphParser();
-        $obj->setFetchStrategy(new HttpFetchStrategy());
+        $obj = new OpenGraphParser(array('fetchStrategy' => new HttpFetchStrategy()));
         return $obj;
     }
 
     public static function File() {
-        $obj = new OpenGraphParser();
-        $obj->setFetchStrategy(new FileFetchStrategy());
+        $obj = new OpenGraphParser(array('fetchStrategy' => new FileFetchStrategy()));
         return $obj;
     }
 
-    public function __construct($fetchStrategy=null) {
+    /**
+     * Constructs a new parser with the given options
+     *
+     * Currently only fetchStrategy is used
+     */
+    public function __construct($options=array()) {
+        $fetchStrategy = null;
+        $cacheAdapter = null;
+
+        extract($options);
+
         if(is_null($fetchStrategy)) {
-            $this->fetchStrategy = new FetchStrategy();
+            $fetchStrategy = new FetchStrategy();
         }
+
+        $this->fetchStrategy = $fetchStrategy;
     }
 
     public function parse($uri) {
