@@ -204,5 +204,24 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
 
         $results = $subject->parseList(array('some/url/here','some/url/here','some/url/here'));
     }
+
+    public function testArticleFieldsAreIncludedAsSubkey() {
+        $subject = OpenGraphParser::File();
+        $fixturePath = realpath(__DIR__.'/../fixtures/article.html');
+        $result = $subject->parse($fixturePath);
+
+        $fields = $result->getOpenGraphFields();
+
+        $this->assertArrayHasKey('url', $fields);
+        $this->assertEquals('http://clauswitt.com/how-to-write-a-cat-reading-files-in-c/', $fields['url']);
+
+        $this->assertArrayHasKey('title', $fields);
+        $this->assertArrayHasKey('description', $fields);
+        $this->assertArrayHasKey('type', $fields);
+        $this->assertArrayHasKey('article', $fields);
+        $this->assertArrayHasKey('published_time', $fields['article']);
+        $this->assertEquals('2015-01-02T09:46:25.000Z',  $fields['article']['published_time']);
+
+    }
 }
 

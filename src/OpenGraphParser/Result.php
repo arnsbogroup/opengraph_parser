@@ -20,6 +20,19 @@ class Result {
             $this->og_fields[str_replace('og:', '', $property)] = $content;
         }
 
+        if(isset($this->og_fields['type'])) {
+            $type = $this->og_fields['type'];
+            $this->og_fields[$type] = array();
+
+            $query = '//*/meta[starts-with(@property, \''.$type.':\')]';
+            $metas = $xpath->query($query);
+            foreach ($metas as $meta) {
+                $property = $meta->getAttribute('property');
+                $content = $meta->getAttribute('content');
+                $this->og_fields[$type][str_replace($type.':', '', $property)] = $content;
+            }
+        }
+
         if(!is_null($this->cacheAdapter)) {
             $cachedData = array('content' => $this->content, 'openGraphFields' => $this->og_fields);
             $this->cacheAdapter->set($this->uri, $cachedData);
