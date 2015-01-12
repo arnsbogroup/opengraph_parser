@@ -68,4 +68,9 @@ class Result {
     public function getUri() {
         return $this->uri;
     }
+
+    public function format($formatter) {
+        $this->og_fields = $formatter($this->og_fields);
+        return $this;
+    }
 }
