@@ -43,9 +43,9 @@ class OpenGraphParser {
     }
 
     public function parseList($urls) {
-        $out = array();
+        $out = new ResultCollection;
         foreach($urls as $url) {
-            $out[] = $this->parse($url);
+            $out->add($this->parse($url));
         }
         return $out;
     }

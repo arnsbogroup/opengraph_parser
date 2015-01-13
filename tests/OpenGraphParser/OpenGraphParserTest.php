@@ -25,6 +25,55 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('OpenGraphParser\Result', $result[2]);
     }
 
+    public function testParseListReturnsAResultCollection() {
+        $result = $this->subject->parseList(array('', '', ''));
+        $this->assertInstanceOf('OpenGraphParser\ResultCollection', $result);
+    }
+
+    public function testParseListReturnsACollectionWithCorrectCount() {
+        $result = $this->subject->parseList(array('', '', ''));
+        $this->assertEquals(3, count($result));
+    }
+
+    public function testParseListCanBeIteratedOver() {
+        $result = $this->subject->parseList(array('', '', ''));
+        foreach($result as $element) {
+            $this->assertInstanceOf('OpenGraphParser\Result', $element);
+        }
+    }
+
+    public function testParseListCanBeFiltered() {
+        $result = $this->subject->parseList(array('', '', ''));
+        $noneSelected = $result->filter(function($elm) {
+            return false;
+        });
+
+        $allSelected = $result->filter(function($elm) {
+            return true;
+        });
+
+        $this->assertEquals(0, count($noneSelected));
+        $this->assertEquals(3, count($allSelected));
+    }
+
+    public function testParseListCanBeFormatted() {
+        $subject = OpenGraphParser::File();
+        $fixturePath = realpath(__DIR__.'/../fixtures/simple.html');
+        $result = $subject->parseList(array($fixturePath));
+        $result->format(function($element) {
+            foreach($element as $key=>$value) {
+                $element[$key] = preg_replace("/[^a-z]/", '', $value);
+            }
+            return $element;
+        });
+
+        $this->assertEquals('httpthisistheurl', $result[0]->getOpenGraphFields()['url']);
+        $this->assertEquals('asicage', $result[0]->getOpenGraphFields()['title']);
+        $this->assertEquals('hisisabasicpageaboutstuff', $result[0]->getOpenGraphFields()['description']);
+        $this->assertEquals('article', $result[0]->getOpenGraphFields()['type']);
+    }
+
+
     public function testParseUsesFetchStrategy() {
 
         $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
