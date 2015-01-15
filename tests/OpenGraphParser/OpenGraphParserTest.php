@@ -37,9 +37,12 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
 
     public function testParseListCanBeIteratedOver() {
         $result = $this->subject->parseList(array('', '', ''));
+        $calls = 0;
         foreach($result as $element) {
             $this->assertInstanceOf('OpenGraphParser\Result', $element);
+            $calls++;
         }
+        $this->assertEquals(3, $calls);
     }
 
     public function testParseListCanBeFiltered() {
