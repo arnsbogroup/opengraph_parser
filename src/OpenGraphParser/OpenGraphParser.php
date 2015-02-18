@@ -45,7 +45,11 @@ class OpenGraphParser {
     public function parseList($urls) {
         $out = new ResultCollection;
         foreach($urls as $url) {
+            try {
             $out->add($this->parse($url));
+            } catch(\Exception $ex) {
+                // skip exceptions
+            }
         }
         return $out;
     }

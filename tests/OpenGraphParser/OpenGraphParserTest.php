@@ -275,5 +275,52 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2015-01-02T09:46:25.000Z',  $fields['article']['published_time']);
 
     }
+
+    /**
+     * @expectedException OpenGraphParser\OpenGraphFetchException
+     */
+    public function testParseThrowsExceptionIfFetchStrategyDoes() {
+        $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
+            ->setMethods(array('get_content'))
+            ->getMock();
+
+
+        $strategy->expects($this->once())
+                 ->method('get_content')
+                 ->with('something')
+                 ->will($this->throwException(new OpenGraphFetchException));
+
+
+        $this->subject->setFetchStrategy($strategy);
+
+
+        $this->subject->parse('something');
+    }
+
+    public function testParseListOnlyReturnsResultsForEntriesWithoutExceptions() {
+        $fixture1 = file_get_contents(realpath(__DIR__.'/../fixtures/article.html'));
+        $fixture2 = file_get_contents(realpath(__DIR__.'/../fixtures/simple.html'));
+        $map = array(
+                array('first', $fixture1), 
+                array('second', $this->throwException(new OpenGraphFetchException())), 
+                array('third', $fixture2),
+        );
+
+        $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
+            ->setMethods(array('get_content'))
+            ->getMock();
+
+        $strategy->expects($this->any())
+            ->method('get_content')
+            ->will($this->returnValueMap($map));
+
+
+        $this->subject->setFetchStrategy($strategy);
+
+
+        $results = $this->subject->parseList(array('first','second','third'));
+        $this->assertEquals(2, count($results));
+    }
+
 }
 
