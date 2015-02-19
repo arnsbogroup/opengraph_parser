@@ -6,38 +6,6 @@ class Result {
     protected $uri;
     protected $cacheAdapter;
 
-    protected function build_og_fields() {
-        $this->og_fields = array();
-        libxml_use_internal_errors(true);
-        $doc = new \DomDocument();
-        $doc->loadHTML($this->content);
-        $xpath = new \DOMXPath($doc);
-        $query = '//*/meta[starts-with(@property, \'og:\')]';
-        $metas = $xpath->query($query);
-        foreach ($metas as $meta) {
-            $property = $meta->getAttribute('property');
-            $content = $meta->getAttribute('content');
-            $this->og_fields[str_replace('og:', '', $property)] = $content;
-        }
-
-        if(isset($this->og_fields['type'])) {
-            $type = $this->og_fields['type'];
-            $this->og_fields[$type] = array();
-
-            $query = '//*/meta[starts-with(@property, \''.$type.':\')]';
-            $metas = $xpath->query($query);
-            foreach ($metas as $meta) {
-                $property = $meta->getAttribute('property');
-                $content = $meta->getAttribute('content');
-                $this->og_fields[$type][str_replace($type.':', '', $property)] = $content;
-            }
-        }
-
-        if(!is_null($this->cacheAdapter)) {
-            $cachedData = array('content' => $this->content, 'openGraphFields' => $this->og_fields);
-            $this->cacheAdapter->set($this->uri, $cachedData);
-        }
-    }
 
     public function __construct($data) {
         $this->uri = $data['uri'];
@@ -72,5 +40,65 @@ class Result {
     public function format($formatter) {
         $this->og_fields = $formatter($this->og_fields);
         return $this;
+    }
+
+
+    protected function build_og_fields() {
+        $this->og_fields = array();
+        $this->buildOpenGraph($this->content);
+        $this->cacheOgFields();
+    }
+
+    //// PRIVATE ////
+    //
+    //
+
+
+    private function cacheOgFields() {
+        if(!is_null($this->cacheAdapter)) {
+            $cachedData = array('content' => $this->content, 'openGraphFields' => $this->og_fields);
+            $this->cacheAdapter->set($this->uri, $cachedData);
+        }
+    }
+
+    private function buildOpenGraph($content) {
+        $doc = $this->getDom($content);
+        $metas = $this->getMetaFieldsStartingWith('og:', $doc);
+        $this->og_fields = $this->extractAttributes($metas, 'og:');
+        $this->buildSubType($doc, $this->og_fields);
+    }
+
+    private function buildSubType($doc, &$existingFields) {
+        if(isset($existingFields['type'])) {
+            $type = $existingFields['type'];
+            $existingFields[$type] = array();
+
+            $metas = $this->getMetaFieldsStartingWith($type.':', $doc);
+            $existingFields[$existingFields['type']] = $this->extractAttributes($metas, $type.':');
+        }
+    }
+
+    private function extractAttributes($metas, $removePrefix='') {
+        $out = array();
+        foreach ($metas as $meta) {
+            $property = $meta->getAttribute('property');
+            $content = $meta->getAttribute('content');
+            $out[str_replace($removePrefix, '', $property)] = $content;
+        }
+        return $out;
+    }
+
+    private function getDom($content) {
+        libxml_use_internal_errors(true);
+        $doc = new \DomDocument();
+        $doc->loadHTML($content);
+        return $doc;
+    }
+
+    private function getMetaFieldsStartingWith($prefix, $fromDocument) {
+        $xpath = new \DOMXPath($fromDocument);
+        $query = '//*/meta[starts-with(@property, \''.$prefix.'\')]';
+        $metas = $xpath->query($query);
+        return $metas;
     }
 }
