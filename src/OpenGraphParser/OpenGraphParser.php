@@ -54,12 +54,22 @@ class OpenGraphParser {
         return $out;
     }
 
-    public function setFetchStrategy(\OpenGraphParser\AbstractFetchStrategy $strategy) {
+    public function setFetchStrategy(AbstractFetchStrategy $strategy) {
+        if(!is_null($this->cacheAdapter)) {
+            $strategy->setCacheAdapter($this->cacheAdapter);
+        }
+
         $this->fetchStrategy = $strategy;
     }
 
     public function getFetchStrategy() {
         return $this->fetchStrategy;
+    }
+    
+    public function setCacheAdapter($cacheAdapter) {
+        $this->fetchStrategy->setCacheAdapter($cacheAdapter);
+
+        $this->cacheAdapter = $cacheAdapter;
     }
 
     public function getCacheAdapter() {
