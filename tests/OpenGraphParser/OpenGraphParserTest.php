@@ -328,6 +328,11 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getCacheAdapter());
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
+        
+        $this->subject->setCacheAdapter(new NoCacheAdapter);
+
+        $this->assertInstanceOf('OpenGraphParser\NoCacheAdapter', $this->subject->getCacheAdapter());
+        $this->assertInstanceOf('OpenGraphParser\NoCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
     }
 
     public function testSettingNewFetchStrategyTheCacheAdapterShouldBeAssignedToIt()
@@ -336,6 +341,11 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->subject->setFetchStrategy(new FileFetchStrategy);
 
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
+        
+        $this->subject->setCacheAdapter(new NoCacheAdapter);
+        $this->subject->setFetchStrategy(new FileFetchStrategy);
+
+        $this->assertInstanceOf('OpenGraphParser\NoCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
     }
 
 }
