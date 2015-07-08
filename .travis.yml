@@ -1,6 +1,10 @@
 language: php
 php:
   - hhvm
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
 env:
 install: composer install
 script: mkdir -p build/logs && phpunit --coverage-clover build/logs/clover.xml && CODECLIMATE_REPO_TOKEN=a2bd599d6b818c89d627730abf660dbb78809acd20f78da3c0b28cfa3493b101 vendor/bin/test-reporter
