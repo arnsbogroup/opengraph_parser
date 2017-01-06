@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6dbe15881395db9981d50878fe713db2",
+    "content-hash": "2f71a0adbf52c0d5a1376b04f5d22636",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -231,7 +231,7 @@
     "packages-dev": [
         {
             "name": "codeclimate/php-test-reporter",
-            "version": "v0.4.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/codeclimate/php-test-reporter.git",
@@ -293,7 +293,7 @@
                 "codeclimate",
                 "coverage"
             ],
-            "time": "2016-12-29T16:42:14+00:00"
+            "time": "2016-12-29 16:42:14"
         },
         {
             "name": "doctrine/instantiator",
@@ -2112,7 +2112,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "codeclimate/php-test-reporter": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
