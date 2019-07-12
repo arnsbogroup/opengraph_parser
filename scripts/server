@@ -12,4 +12,4 @@ script/update
 
 # Boot the app and any other necessary processes.
 
-foreman start -e .env -f Procfile.dev
+echo "N/A"
