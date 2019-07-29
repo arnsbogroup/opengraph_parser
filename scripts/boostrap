@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# script/bootstrap: Resolve all dependencies that the application requires to
+#                   run.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+if [ -f "composer.json" ]; then
+  echo "==> Installing composer packages"
+  php composer validate >/dev/null 2>&1  || {
+      php composer install
+  }
+fi
