@@ -18,5 +18,8 @@
 
   "autoload": {
     "psr-4": {"OpenGraphParser\\": "src/OpenGraphParser/"}
-  }
+  },
+  "config": {
+    "secure-http": false
+  }  
 }
