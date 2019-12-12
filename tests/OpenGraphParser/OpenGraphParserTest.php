@@ -276,10 +276,9 @@ class OpenGraphParserTest extends \PHPUnit\Framework\TestCase
 
     }
 
-    /**
-     * @expectedException OpenGraphParser\OpenGraphFetchException
-     */
     public function testParseThrowsExceptionIfFetchStrategyDoes() {
+        $this->expectException(\OpenGraphParser\OpenGraphFetchException::class);
+
         $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
             ->setMethods(array('get_content'))
             ->getMock();
