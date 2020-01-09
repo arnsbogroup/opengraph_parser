@@ -1,11 +1,11 @@
 <?php
 namespace OpenGraphParser;
-class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
+class OpenGraphParserTest extends \PHPUnit\Framework\TestCase
 {
 
-    public function setUp() {
+    public function setUp() : void {
         $this->subject = new OpenGraphParser();
-    
+
     }
     public function testClassCanBeInstantiated() {
         $this->assertInstanceOf('OpenGraphParser\OpenGraphParser', $this->subject);
@@ -174,7 +174,7 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cacheAdapter, $subject->getFetchStrategy()->getCacheAdapter());
 
         $subject->parse('some/url/here');
-        
+
     }
 
     public function testParserSetsResultOfParsingInCache() {
@@ -276,10 +276,9 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    /**
-     * @expectedException OpenGraphParser\OpenGraphFetchException
-     */
     public function testParseThrowsExceptionIfFetchStrategyDoes() {
+        $this->expectException(\OpenGraphParser\OpenGraphFetchException::class);
+
         $strategy = $this->getMockBuilder('OpenGraphParser\FetchStrategy')
             ->setMethods(array('get_content'))
             ->getMock();
@@ -301,8 +300,8 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $fixture1 = file_get_contents(realpath(__DIR__.'/../fixtures/article.html'));
         $fixture2 = file_get_contents(realpath(__DIR__.'/../fixtures/simple.html'));
         $map = array(
-                array('first', $fixture1), 
-                array('second', $this->throwException(new OpenGraphFetchException())), 
+                array('first', $fixture1),
+                array('second', $this->throwException(new OpenGraphFetchException())),
                 array('third', $fixture2),
         );
 
@@ -321,14 +320,14 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $results = $this->subject->parseList(array('first','second','third'));
         $this->assertEquals(2, count($results));
     }
-    
+
     public function testSettingNewCacheAdapterItAlsoShouldSetItOnTheFetchStrategy()
     {
         $this->subject->setCacheAdapter(new ArrayCacheAdapter);
 
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getCacheAdapter());
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
-        
+
         $this->subject->setCacheAdapter(new NoCacheAdapter);
 
         $this->assertInstanceOf('OpenGraphParser\NoCacheAdapter', $this->subject->getCacheAdapter());
@@ -341,7 +340,7 @@ class OpenGraphParserTest extends \PHPUnit_Framework_TestCase
         $this->subject->setFetchStrategy(new FileFetchStrategy);
 
         $this->assertInstanceOf('OpenGraphParser\ArrayCacheAdapter', $this->subject->getFetchStrategy()->getCacheAdapter());
-        
+
         $this->subject->setCacheAdapter(new NoCacheAdapter);
         $this->subject->setFetchStrategy(new FileFetchStrategy);
 

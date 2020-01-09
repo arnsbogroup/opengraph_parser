@@ -5,7 +5,7 @@ class ResultCollection implements \ArrayAccess, \Countable, \Iterator{
     use ArrayTraits\Countable;
     use ArrayTraits\Iterator;
 
-    protected $elements;
+    protected $elements = [];
     public function add($elm) {
         $this->elements[] = $elm;
     }
